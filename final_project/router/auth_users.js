@@ -45,7 +45,7 @@ regd_users.post("/login", (req, res) => {
     req.session.authorization = {
       accessToken, username
     }
-    return res.status(200).send("User successfully logged in");
+    return res.status(200).send("User " + username + " successfully logged in");
   } else {
     return res.status(208).json({ message: "Invalid Login. Check username and password" });
   }
@@ -55,7 +55,8 @@ regd_users.post("/login", (req, res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   const book = books[req.params.isbn];
   if (book && req.body.review) {
-    books[req.params.isbn].reviews[req.user] = req.body.review;
+    books[req.params.isbn].reviews[req.session.authorization.username] = req.body.review;
+    res.send("Review for ISBN " + req.params.isbn + " by user " + req.session.authorization.username + " added!");
   }
   else {
     res.send("Unable to add/edit review!");
@@ -66,7 +67,8 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const book = books[req.params.isbn];
   if (book) {
-    delete books[req.params.isbn].reviews[req.user];
+    delete books[req.params.isbn].reviews[req.session.authorization.username];
+    res.send("Review for ISBN " + req.params.isbn + " by user " + req.session.authorization.username + " deleted!");
   }
   else {
     res.send("Unable to delete review!");

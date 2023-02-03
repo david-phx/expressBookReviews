@@ -25,6 +25,14 @@ public_users.get('/', function (req, res) {
   res.send(JSON.stringify(books, null, 4));
 });
 
+// TASK 10 - Get the book list available in the shop using promises
+public_users.get('/books', function (req, res) {
+  const get_books = new Promise((resolve, reject) => {
+    resolve(res.send(JSON.stringify({ books }, null, 4)));
+  });
+  get_books.then(() => console.log("Promise for Task 10 resolved"));
+});
+
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', function (req, res) {
   res.send(JSON.stringify(books[req.params.isbn], null, 4))

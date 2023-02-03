@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios').default;
 
 
 public_users.post("/register", (req, res) => {
@@ -23,14 +24,6 @@ public_users.post("/register", (req, res) => {
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
   res.send(JSON.stringify(books, null, 4));
-});
-
-// TASK 10 - Get the book list available in the shop using promises
-public_users.get('/books', function (req, res) {
-  const get_books = new Promise((resolve, reject) => {
-    resolve(res.send(JSON.stringify({ books }, null, 4)));
-  });
-  get_books.then(() => console.log("Promise for Task 10 resolved"));
 });
 
 // Get book details based on ISBN
@@ -64,5 +57,52 @@ public_users.get('/title/:title', function (req, res) {
 public_users.get('/review/:isbn', function (req, res) {
   res.send(JSON.stringify(books[req.params.isbn].reviews, null, 4))
 });
+
+// Task 10: Get all books – Using async/await
+public_users.get('/books', async function (req, res) {
+  const get_all_books = new Promise((resolve, reject) => {
+    resolve(res.send(JSON.stringify(books, null, 4)));
+  });
+  await get_all_books;
+  console.log("Await for Task 10 resolved");
+});
+
+// Task 11: Search by ISBN – Using Promises
+public_users.get('/books/isbn/:isbn', function (req, res) {
+  const get_book_by_isbn = new Promise((resolve, reject) => {
+    resolve(res.send(JSON.stringify(books[req.params.isbn], null, 4)));
+  });
+  get_book_by_isbn.then(() => console.log("Promise for Task 11 resolved"));
+});
+
+// Task 12: Search by Author using Promises
+public_users.get('/books/author/:author', function (req, res) {
+  const get_books_by_author = new Promise((resolve, reject) => {
+    const booksByAuthor = {};
+    for (const book in books) {
+      if (books[book].author === req.params.author) {
+        booksByAuthor[book] = books[book];
+      }
+    }
+    resolve(res.send(JSON.stringify(booksByAuthor, null, 4)));
+  });
+  get_books_by_author.then(() => console.log("Promise for task 12 resolved"));
+});
+
+// Task 13: Search by Title using async/await
+public_users.get('/books/title/:title', async function (req, res) {
+  const get_books_by_title = new Promise((resolve, reject) => {
+    const booksByTitle = {};
+    for (const book in books) {
+      if (books[book].title === req.params.title) {
+        booksByTitle[book] = books[book];
+      }
+    }
+    resolve(res.send(JSON.stringify(booksByTitle, null, 4)));
+  });
+  await get_books_by_title;
+  console.log("Await for Task 13 resolved");
+});
+
 
 module.exports.general = public_users;
